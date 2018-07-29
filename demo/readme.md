@@ -6,28 +6,30 @@
 - 渲染可以调用dom.js里createElement函数。
 
 ### 分析
-调试后，发现<div id="div">test</div>被转义成createElement('div', { id: 'div' }, 'test')。
+调试后，发现`<div id="div">test</div>`被转义成`createElement('div', { id: 'div' }, 'test')`。
 
-这是babel编译后的结果，自然要寻找babelrc文件看看编译配置。发现文件内也有createElement函数，位于plugin-transform-react-jsx插件的一个配置。
+这是babel编译后的结果，所以查看babelrc文件的编译配置。配置内也包含createElement函数，在plugin-transform-react-jsx插件内。
 
-去查plugin-transform-react-jsx的使用方法，发现它是把jsx通过pragma提供的函数转义成react实例组件。pragma默认值为React.createElement。
+谷歌plugin-transform-react-jsx插件使用方法，它是把jsx通过pragma提供的函数转义成react实例组件。pragma默认值为React.createElement。
 
-题干是实现一个数据结构，这个结构实际上就是React组件，而createElement要做的，就是把参数转成React实例组件。React组件这里我们仅实现VDOM最基本功能即可。看过react源码同学知道react组件的结构最基本格式为:
+题干是实现一个数据结构，这个结构实际上就是React虚拟节点。而createElement要做的，就是把参数转成React虚拟节点。React虚拟节点本次仅实现最基本的功能即可。
+
+看过react源码同学知道react虚拟节点的基本结构为:
 
 ```
 {
   _rootId: xxx,
-  tagName(原生): xxx,
-  static displayName（复合）: xxx,
   props: {
     ...
   },
   children: [...]
 }
 ```
-通过children来对其他组件的引用。
+通过children来对其他虚拟节点引用。
 
-题干实现render函数，实际上就是解析这个数据结构，把react这种对象形式转化成html形式。这里递归解析虚拟节点，创建组件时候调用dom.js相关api即可。
+题干实现render函数，实际上就是解析这个虚拟节点，把react虚拟节点对象解析成真实dom。
+
+由于children存在嵌套，需递归解析虚拟节点，创建真实dom时候调用dom.js相关api即可。
 
 ### 思维流程
 1. 完成作业的同学，检查是否按照上述思路。
